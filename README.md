@@ -71,7 +71,7 @@ It is really easy to access an element of a slice by index and cause panic, so a
 
 ## Testing
 
-### Store layer testing
+### Database layer testing
 
 Every application has Store/Database layer which mostly consists of CRUD operations. There are some tips on how to 
 write those test and what to test.
