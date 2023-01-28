@@ -68,3 +68,44 @@ It leads to SQL injections.
 ### 10. Always check slice's length before accessing it
 
 It is really easy to access an element of a slice by index and cause panic, so always check the length.
+
+## Testing
+
+### Store layer testing
+
+Every application has Store/Database layer which mostly consists of CRUD operations. There are some tips on how to 
+write those test and what to test.
+
+**Quick tips:**
+
+- Don't mock your database. Use [dockertest](https://github.com/ory/dockertest).
+- Test your migrations.
+- Run your CRUD operations more than once, run 1000 times.
+- Use fake and random data. Library such as [gaofakeit](https://github.com/brianvoe/gofakeit) helps you with that.
+
+Let's discuss every point mentioned above.
+
+**Mocks**
+
+You are testing your database layer, which means you are testing your implementation and not some abstract layer. 
+Mocks are far away from a real Postgres or MySQL database. Testing against real database helps you to reveal some 
+bugs before deploying your application to your real environment. Creating a new docker image for testing takes a few 
+seconds, so don't be afraid of it.
+
+
+**Migrations**
+
+If your migrations are shipped with an application, test the migrations by calling `up` and `down` twice. It will 
+help you avoid silly mistakes.
+
+**1000 times**
+
+During the tests create/read/update/delete more than once to catch deadlocks, avoid leaky resources and find some
+hidden bugs. For example, the method that should return only one record, returns more than one, or deleting one
+record in reality deletes more than one.
+
+**Fake data**
+
+Imagine that you mistakenly used `int8` in your database, but you are trying to save `int32` instead. If you use a 
+constant value during the tests, you probably won't find the issue. Therefore, using some random data might help 
+you to discover those problems during the tests.
