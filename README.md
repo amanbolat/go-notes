@@ -69,6 +69,8 @@ It leads to SQL injections.
 
 It is really easy to access an element of a slice by index and cause panic, so always check the length.
 
+<br/>
+
 ## Testing
 
 ### Database layer testing
@@ -109,6 +111,8 @@ record in reality deletes more than one.
 Imagine that you mistakenly used `int8` in your database, but you are trying to save `int32` instead. If you use a 
 constant value during the tests, you probably won't find the issue. Therefore, using some random data might help 
 you to discover those problems during the tests.
+
+<br/>
 
 ### Event-driven applications testing
 
