@@ -109,3 +109,27 @@ record in reality deletes more than one.
 Imagine that you mistakenly used `int8` in your database, but you are trying to save `int32` instead. If you use a 
 constant value during the tests, you probably won't find the issue. Therefore, using some random data might help 
 you to discover those problems during the tests.
+
+### Event-driven applications testing
+
+You definitely have a part of some application that listens for some events incoming from a message broker and 
+writes them to the database. Our tests should cover a few things:
+
+- All the valid events were received successfully.
+- All the data from events was mapped correctly and saved to DB.
+- Invalid data was rejected and moved somewhere else.
+
+**Counter**
+
+Don't use `time.Sleep` and wait for a constant time until all the events were digested. On slow machines it might 
+take longer and the test will fail. On faster machines you are wasting time. I suggest to have a custom counter 
+injected into your `Subscriber/Listener` object, and read it every few seconds until all the event were drained. 
+After that fetch all the saved records from the database and check for equality with sent events. This strategy also 
+helps to count the number of invalid events.
+
+**Containers**
+
+Use `dockertest` or similar library to spin up the containers programmatically during the tests. Don't try to mock 
+`kafka` or any other message broker. Creating `kafka` container for tests might be very slow and consume a lot of 
+CPU and RAM, so I would suggest to use something which is Kafka API compatible, e.g. [redpanda](https://github.com/redpanda-data/redpanda/).
+The latter doesn't need zookeeper, and it starts much faster than kafka. 
